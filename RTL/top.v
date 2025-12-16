@@ -2,13 +2,13 @@ module uart_top (
     input  wire clk,        
     input  wire rst,       
 
-    // Transmitter interface
+    // Transmitter 
     input  wire start,      // Start transmission
     input  wire [7:0] data_in,
     output wire tx,         // UART TX pin
     output wire tx_busy,
 
-    // Receiver interface
+    // Receiver 
     input  wire rx,         // UART RX pin
     output wire [7:0] rx_data,
     output wire rx_done

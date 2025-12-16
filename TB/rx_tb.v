@@ -1,63 +1,73 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
-module tb_uart_rx;
-  parameter CLK_PER_BIT = 5208;
-    reg clk = 0;
-    reg rst = 1;
-    reg rx = 1;           // idle high
-    wire [7:0] data;
-    wire done;
+module uart_rx_tb;
 
-    // Instantiate uart_rx
-    uart_rx #(.CLK_PER_BIT(5208)) uut (
+    // Testbench signals
+    reg clk;
+    reg rst;
+    reg baud_tick;
+    reg rx;
+    wire [7:0] rx_data;
+    wire rx_done;
+
+    // Instantiate DUT
+    uart_rx uut (
         .clk(clk),
         .rst(rst),
+        .baud_tick(baud_tick),
         .rx(rx),
-        .data(data),
-        .done(done)
+        .rx_data(rx_data),
+        .rx_done(rx_done)
     );
 
-      initial begin
-          clk = 0;
-          forever #10 clk = ~clk;  
-      end
+    // Clock generation: 100 MHz
+    always #5 clk = ~clk;
 
-    initial begin
-        rst = 1;
-        #100;              // short reset pulse
-        rst = 0;
-
-        #100;           // wait some time before sending
-
-        send_uart_byte(8'hA5); // example byte: 10100101
-
-        #200000;           
-
-        $display("Received data: %02X", data);
-        $finish;
-    end
-
-    task send_uart_byte(input [7:0] byte);
+    // Task to send one UART byte
+    task send_uart_byte;
+        input [7:0] data;
         integer i;
         begin
             // Start bit
-            rx <= 0;
-            #(CLK_PER_BIT * 20);
+            rx = 0;
+            #100;
+            baud_tick = 1; #10; baud_tick = 0;
 
             // Data bits (LSB first)
             for (i = 0; i < 8; i = i + 1) begin
-                rx <= byte[i];
-                #(CLK_PER_BIT * 20);
+                rx = data[i];
+                #100;
+                baud_tick = 1; #10; baud_tick = 0;
             end
 
             // Stop bit
-            rx <= 1;
-            #(CLK_PER_BIT * 20);
-
-            // Extra time after frame
-            #(CLK_PER_BIT * 40);
+            rx = 1;
+            #100;
+            baud_tick = 1; #10; baud_tick = 0;
         end
     endtask
 
-endmodule
+    // Test sequence
+    initial begin
+        // Initialize
+        clk = 0;
+        rst = 1;
+        baud_tick = 0;
+        rx = 1; // idle state
 
+        // Reset pulse
+        #50;
+        rst = 0;
+
+        // Send byte 0x55
+        #100;
+        send_uart_byte(8'h55);
+
+        // Wait for reception
+        #500;
+
+        // End simulation
+        $stop;
+    end
+
+endmodule

@@ -12,7 +12,7 @@ module uart_rx (
     reg       receiving;
     reg       rx_sync;
 
-    // Synchronize RX to clk (important for FPGA)
+    // Synchronize RX to clk to insure reliability 
     always @(posedge clk) begin
         rx_sync <= rx;
     end
@@ -25,21 +25,21 @@ module uart_rx (
             rx_done   <= 0;
             rx_data   <= 0;
         end else begin
-            rx_done <= 0; // default
+            rx_done <= 0;
 
-            // Detect start bit (falling edge)
+            // Detecting start bit and starts data reciving 
             if (!receiving && rx_sync == 0) begin
                 receiving <= 1;
                 bit_index <= 0;
             end
 
-            // Receive data bits
+            // Receive data bits are stored in buffer register rx shift 
             else if (receiving && baud_tick) begin
                 if (bit_index < 8) begin
                     rx_shift[bit_index] <= rx_sync;
                     bit_index <= bit_index + 1;
                 end
-                // Stop bit
+                // Stop bit 
                 else begin
                     receiving <= 0;
                     rx_data   <= rx_shift;
@@ -50,3 +50,4 @@ module uart_rx (
     end
 
 endmodule
+

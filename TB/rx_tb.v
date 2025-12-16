@@ -66,8 +66,9 @@ module uart_rx_tb;
         // Wait for reception
         #500;
 
-        // End simulation
-        $stop;
+       
+        $finish;
     end
 
 endmodule
+

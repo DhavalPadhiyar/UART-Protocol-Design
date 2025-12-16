@@ -1,32 +1,50 @@
- module uart_top (
-   input clk,           
-   input rst,          
-   input start,          
-   input [7:0] data_in,  
-   input rx_in,          
-   output [7:0] data_out, 
-   output done,         
-   output tx_out,        
-   output busy         
+module uart_top (
+    input  wire clk,        // FPGA clock (e.g. 100 MHz)
+    input  wire rst,        // Active-high reset
+
+    // Transmitter interface
+    input  wire start,      // Start transmission
+    input  wire [7:0] data_in,
+    output wire tx,         // UART TX pin
+    output wire tx_busy,
+
+    // Receiver interface
+    input  wire rx,         // UART RX pin
+    output wire [7:0] rx_data,
+    output wire rx_done
 );
 
-   // UART Transmitter instance
-   uart_tx #(.CLK_PER_BIT(5208)) u_tx (
-       .clk(clk),
-       .rst(rst),
-       .data_in(data_in),
-       .start(start),
-       .tx(tx_out),    // output goes to top module's tx_out pin
-       .busy(busy)
-   );
+    wire baud_tick;
 
-   // UART Receiver instance
-   uart_rx #(.CLK_PER_BIT(5208)) u_rx (
-       .clk(clk),
-       .rst(rst),
-       .rx(rx_in),     // input comes from top module's rx_in pin (external source)
-       .data(data_out),
-       .done(done)
-   );
+    
+    baud_gen #(
+        .CLK_FREQ(100_000_000), // change if needed
+        .BAUD_RATE(9600)
+    ) baud_inst (
+        .clk(clk),
+        .rst(rst),
+        .baud_tick(baud_tick)
+    );
+
+   
+    uart_tx tx_inst (
+        .clk(clk),
+        .rst(rst),
+        .baud_tick(baud_tick),
+        .start(start),
+        .data_in(data_in),
+        .tx(tx),
+        .busy(tx_busy)
+    );
+
+  
+    uart_rx rx_inst (
+        .clk(clk),
+        .rst(rst),
+        .baud_tick(baud_tick),
+        .rx(rx),
+        .rx_data(rx_data),
+        .rx_done(rx_done)
+    );
 
 endmodule

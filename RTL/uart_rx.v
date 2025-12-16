@@ -9,8 +9,8 @@ module uart_rx (
 
     reg [3:0] bit_index;// it will keep track of data 
     reg [7:0] rx_shift; // buffer shift register to recreate the frame recived 
-    reg       receiving;
-    reg       rx_sync;
+    reg       receiving; // this flag is for indiacating that data is being recived 
+    reg       rx_sync; // for synchronised rx data reception
 
     // Synchronize RX to clk to insure reliability 
     always @(posedge clk) begin
@@ -50,5 +50,6 @@ module uart_rx (
     end
 
 endmodule
+
 
 

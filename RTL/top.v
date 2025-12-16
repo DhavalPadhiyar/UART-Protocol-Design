@@ -1,6 +1,6 @@
 module uart_top (
-    input  wire clk,        // FPGA clock (e.g. 100 MHz)
-    input  wire rst,        // Active-high reset
+    input  wire clk,        
+    input  wire rst,       
 
     // Transmitter interface
     input  wire start,      // Start transmission
@@ -48,3 +48,4 @@ module uart_top (
     );
 
 endmodule
+

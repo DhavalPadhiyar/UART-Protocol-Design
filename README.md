@@ -29,6 +29,6 @@ and verified in **Xilinx Vivado**. The project demonstrates **baud rate generati
 > Note: Features like oversampling, parity, and error detection are **not included**.  
 > **Estimated Working Percentage:** ~80%  
 
-## 🚀 Author
+## Author
 **Dhaval Padhiyar**  
 Verilog | Digital Design | UART Communication

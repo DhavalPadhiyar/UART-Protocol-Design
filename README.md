@@ -1,7 +1,7 @@
 # UART Protocol Design in Verilog
 
 ## Overview
-I implemented **basic UART protocol design** implemented in **Verilog HDL**  
+I implemented **basic UART protocol design** in **Verilog HDL**  
 and verified in **Xilinx Vivado**. The project demonstrates **baud rate generation, data transmission, and reception** at the RTL level.
 
 ## Platform & Tools
